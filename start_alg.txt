@@ -1,0 +1,50 @@
+cd modules/php/PHP_/ - set path to install composer
+php -r "readfile('https://getcomposer.org/installer');" | php
+php composer.phar -V
+echo @php "%~dp0composer.phar" %*>composer.ba
+-- or --
+[OpenServer]: composer self-update
+
+composer -V
+composer install
+
+composer global require laravel/installer
+laravel new [app-name]
+-- or --
+composer create-project laravel/laravel [app-name]
+
+php artisan route:list
+[starting]: php artisan serve
+cd domains\aiwshop_webapi
+php artisan serve
+
+
+[remove UI frameworks]: php artisan preset none
+composer remove laravel/ui
+
+
+DB Models init:
+[modify .env DB_]
+php artisan migrate:install
+php artisan migrate:fresh
+[rollback]: php artisan migrate:rollback
+[test migration]: php artisan migrate:status
+php artisan make:model [model-name] --all
+php artisan make:controller [ModelController] --api
+php artisan make:seeder [ModelTableSeeder]
+php artisan make:factory [ModelFactory]
+php artisan migrate
+[seed migrations]: php artisan db:seed
+[validations]: php artisan make:request [ModelRequest]
+
+php artisan make:middleware [Middleware]
+[resolve config (before seed)]: php artisan config:cache
+php artisan config:clear
+
+Libraries installation:
+composer require maatwebsite/excel
+[configs]: php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
+[exports]: php artisan make:export UsersExport --model=User
+
+[if 'require' modified]: composer update
+php artisan make:mail SmtpMail
