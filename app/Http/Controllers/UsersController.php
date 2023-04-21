@@ -19,7 +19,7 @@ class UsersController extends Controller
             ->join('roles', 'roles.id', 'users.role_id')
             ->select('users.*', 'roles.name AS rolename')
             ->orderBy('users.id')
-            ->paginate($limit < 1 ? 50 : $limit);
+            ->paginate($limit < 1 ? 10 : $limit);
         
         return response()->json([
             "data" => $data

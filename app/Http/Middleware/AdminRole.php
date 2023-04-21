@@ -17,12 +17,8 @@ class AdminRole
      */
     public function handle(Request $request, Closure $next)
     {
-        // if (Auth::check() && Auth::user()->role_id == 2)
-        if (!in_array(Auth::user()->role_id, [2, 3]))
-        {
-            return redirect()->back();
-        }
-        
-        return $next($request);
+        return Auth::user()->role_id == 2
+            ? $next($request)
+            : response()->json('Your are not an admin');
     }
 }

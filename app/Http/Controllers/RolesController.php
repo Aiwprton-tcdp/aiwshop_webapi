@@ -11,7 +11,7 @@ class RolesController extends Controller
     {
         $n = request('name');
         $name = strtolower(trim($n));
-        $limit = request('limit') ?? 100;
+        $limit = request('limit') ?? 10;
         $offset = request('offset') ?? 0;
 
         $data = DB::table('roles')

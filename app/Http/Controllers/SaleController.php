@@ -13,6 +13,7 @@ class SaleController extends Controller
 {
     public function index()
     {
+        $id = request('id');
         $good = request('good');
         $buyer = request('buyer');
         $min_price = request('min_price');
@@ -21,6 +22,13 @@ class SaleController extends Controller
         $is_returned = request('is_returned');
 
         $data = DB::table('sales')
+            ->where(function ($query) use($id) {
+                if (isset($id) && is_numeric($id)) {
+                    $s = (int)$id;
+                    if ($s < 1) $s = 1;
+                    $query->where('id', $s);
+                }
+            })
             ->where(function ($query) use($good) {
                 if (isset($good) && is_numeric($good)) {
                     $g = (int)$good;
