@@ -81,7 +81,7 @@ class GoodsController extends Controller
                     $query->where('price', '<=', $max);
                 }
             })
-            ->paginate($limit < 1 ? 50 : $limit);
+            ->paginate($limit < 1 ? 10 : $limit);
 
         // Cache::store('file')->put('public_goods', $data, 300);
         

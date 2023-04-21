@@ -17,8 +17,8 @@ class ModeratorRole
      */
     public function handle(Request $request, Closure $next)
     {
-        return Auth::user()->role_id == 3
-            ? redirect()->back()
-            : $next($request);
+        return in_array(Auth::user()->role_id, [2, 3])
+            ? $next($request)
+            : response()->json('Your are not a moderator');
     }
 }
