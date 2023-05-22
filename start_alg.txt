@@ -41,10 +41,16 @@ php artisan make:middleware [Middleware]
 [resolve config (before seed)]: php artisan config:cache
 php artisan config:clear
 
+[event]: php artisan make:event [ModelEvent]
+
 Libraries installation:
 composer require maatwebsite/excel
 [configs]: php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
 [exports]: php artisan make:export UsersExport --model=User
+[websocket]: composer require centrifugal/phpcent:~5.0
+centrifugo genconfig
+composer require predis/predis
+
 
 [if 'require' modified]: composer update
 php artisan make:mail SmtpMail

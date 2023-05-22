@@ -22,30 +22,39 @@ class SaleController extends Controller
         $is_returned = request('is_returned');
 
         $data = DB::table('sales')
-            ->where(function ($query) use($id) {
-                if (isset($id) && is_numeric($id)) {
-                    $s = (int)$id;
-                    if ($s < 1) $s = 1;
-                    $query->where('id', $s);
-                }
+            ->when(isset($id) && is_numeric($id), function($q) use($id) {
+                $s = (int)$id;
+                if ($s < 1) $s = 1;
+                $q->whereId($s);
             })
-            ->where(function ($query) use($good) {
-                if (isset($good) && is_numeric($good)) {
-                    $g = (int)$good;
-                    if ($g < 1) $g = 1;
-                    $query->where('good', $g);
-                }
+            // ->where(function($query) use($id) {
+            //     if (isset($id) && is_numeric($id)) {
+            //         $s = (int)$id;
+            //         if ($s < 1) $s = 1;
+            //         $query->where('id', $s);
+            //     }
+            // })
+            ->when(isset($good) && is_numeric($good), function($q) use($good) {
+                $g = (int)$good;
+                if ($g < 1) $g = 1;
+                $q->whereGood($g);
             })
-            ->where(function ($query) use($buyer) {
+            // ->where(function($query) use($good) {
+            //     if (isset($good) && is_numeric($good)) {
+            //         $g = (int)$good;
+            //         if ($g < 1) $g = 1;
+            //         $query->where('good', $g);
+            //     }
+            // })
+            ->where(function($q) use($buyer) {
                 if (!in_array(Auth::user()->role_id, [2, 3])) {
-                    $query->where('buyer', Auth::id());
-                }
-                elseif (isset($buyer) && is_numeric($buyer)) {
+                    $q->whereBuyer(Auth::id());
+                } elseif (isset($buyer) && is_numeric($buyer)) {
                     $b = (int)$buyer;
-                    $query->where('buyer', $b < 1 ? Auth::id() : $b);
+                    $q->whereBuyer($b < 1 ? Auth::id() : $b);
                 }
             })
-            ->where(function ($query) use($min_price, $max_price) {
+            ->where(function($q) use($min_price, $max_price) {
                 $is_min = isset($min_price);
                 $is_max = !empty($max_price);
                 $min = (int)$min_price;
@@ -55,18 +64,21 @@ class SaleController extends Controller
                 if ($max < $min) $max = $min;
 
                 if ($is_min && $is_max) {
-                    $query->whereBetween('price', [$min, $max]);
+                    $q->whereBetween('price', [$min, $max]);
                 } elseif ($is_min) {
-                    $query->where('price', '>=', $min);
+                    $q->where('price', '>=', $min);
                 } elseif ($is_max) {
-                    $query->where('price', '<=', $max);
+                    $q->where('price', '<=', $max);
                 }
             })
-            ->where(function ($query) use($is_returned) {
-                if (isset($is_returned)) {
-                    $query->where('is_returned', (bool)$is_returned);
-                }
+            ->when(isset($is_returned), function($q) use($is_returned) {
+                $q->whereIsReturned((bool)$is_returned);
             })
+            // ->where(function($query) use($is_returned) {
+            //     if (isset($is_returned)) {
+            //         $query->where('is_returned', (bool)$is_returned);
+            //     }
+            // })
             ->paginate($limit < 1 ? 50 : $limit);
         
         return response()->json([

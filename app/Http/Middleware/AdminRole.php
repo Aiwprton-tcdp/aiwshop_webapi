@@ -19,6 +19,6 @@ class AdminRole
     {
         return Auth::user()->role_id == 2
             ? $next($request)
-            : response()->json('Your are not an admin');
+            : response()->json('You are not an admin');
     }
 }

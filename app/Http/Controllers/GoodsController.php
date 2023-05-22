@@ -8,7 +8,6 @@ use App\Http\Requests\GoodRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
@@ -28,19 +27,19 @@ class GoodsController extends Controller
         $n = request('search');
         $cart_ids = request('cart_ids');
 
-        $name = Str::lower(trim($n));
+        $name = mb_strtolower(trim($n));
         $min_price = request('min_price');
         $max_price = request('max_price');
         $limit = (int)request('limit');
 
         if ($is_file) {
             $data = DB::table('goods')
-                ->where(function ($query) use($cart_ids) {
+                ->where(function($query) use($cart_ids) {
                     if (!empty($cart_ids)) {
                         $query->whereIn('id', array_map('intval', explode(',', $cart_ids)));
                     }
                 })
-                ->where(function ($query) use($name, $n, $min_price, $max_price) {
+                ->where(function($query) use($name, $n, $min_price, $max_price) {
                     if (empty($cart_ids)) {
                         $query->whereRaw('LOWER(name) LIKE ? OR id = ?', ["%{$name}%", (int)$n])
                             ->whereBetween('price', [$min_price, $max_price]);
@@ -48,23 +47,30 @@ class GoodsController extends Controller
                 })
                 ->get();
     
-            var_dump($data, isset($data));
+            // var_dump($data, isset($data));
             return $this->report($data);
         }
 
         $data = DB::table('goods')
-            ->where(function ($query) use($cart_ids) {
-                if (!empty($cart_ids)) {
-                    $query->whereIn('id', array_map('intval', explode(',', $cart_ids)));
-                }
+            ->when(!empty($cart_ids), function($q) use($cart_ids) {
+                $q->whereIn('id', array_map('intval', explode(',', $cart_ids)));
             })
-            ->where(function ($query) use($name, $n, $min_price, $max_price) {
-                if (empty($cart_ids)) {
-                    $query->whereRaw('LOWER(name) LIKE ? OR id = ?', ["%{$name}%", (int)$n])
-                        ->whereBetween('price', [$min_price, $max_price]);
-                }
+            ->when(empty($cart_ids), function($q) use($name, $n, $min_price, $max_price) {
+                $q->whereRaw('LOWER(name) LIKE ? OR id = ?', ["%{$name}%", (int)$n])
+                    ->whereBetween('price', [$min_price, $max_price]);
             })
-            ->where(function ($query) use($min_price, $max_price) {
+            // ->where(function($query) use($cart_ids) {
+            //     if (!empty($cart_ids)) {
+            //         $query->whereIn('id', array_map('intval', explode(',', $cart_ids)));
+            //     }
+            // })
+            // ->where(function($query) use($name, $n, $min_price, $max_price) {
+            //     if (empty($cart_ids)) {
+            //         $query->whereRaw('LOWER(name) LIKE ? OR id = ?', ["%{$name}%", (int)$n])
+            //             ->whereBetween('price', [$min_price, $max_price]);
+            //     }
+            // })
+            ->where(function($query) use($min_price, $max_price) {
                 $is_min = isset($min_price);
                 $is_max = !empty($max_price);
                 $min = (int)$min_price;
@@ -136,16 +142,6 @@ class GoodsController extends Controller
 
     public function destroy($id)
     {
-        // $good = null;
-        // try {
-        //     $good = Good::findOrFail($id);
-        // } catch (ModelNotFoundException $e) {
-        //     return false;
-        // } finally {
-        //     // return $good?->delete();
-        //     return false;
-        // }
-
         $good = Good::findOrFail($id);
         $result = $good->delete();
 

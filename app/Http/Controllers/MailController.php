@@ -22,7 +22,7 @@ class MailController extends Controller
             'body' => 'This is for testing email using smtp.'
         ];
 
-        $data = UsersSocial::where('user_id', Auth::id())->first();
+        $data = UsersSocial::whereUserId(Auth::id())->first();
         
         // mail($data->value,
         //     'Тема письма',

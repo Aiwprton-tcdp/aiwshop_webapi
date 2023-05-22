@@ -4,9 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChartController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SaleController;
@@ -36,12 +38,19 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
   Route::apiResource('sales', SaleController::class)->except([
     'update', 'destroy'
   ]);
-  Route::apiResource('carts', CartController::class)->except([
+  Route::apiResource('cart', CartController::class)->except([
     'show', 'update'
   ]);
   Route::apiResource('goods', GoodsController::class)->except([
     'index'
   ]);
+  Route::apiResource('chats', ChatController::class)->except([
+    'destroy'
+  ]);
+  Route::apiResource('messages', MessageController::class);
+  // Route::apiResource('messages', MessageController::class)->except([
+  //   'destroy'
+  // ]);
 
   Route::apiResources([
     'users_socials' => UsersSocialController::class,
@@ -59,7 +68,9 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
       'index'
     ]);
 
-    Route::get('report', [GoodsController::class, 'report']);
+    Route::delete('chats/{id}', [ChatController::class, 'destroy']);
+    // Route::delete('messages/{id}', [MessageController::class, 'destroy']);
+    // Route::get('report', [GoodsController::class, 'report']);
     Route::get('send-mail', [MailController::class, 'index']);
     
     Route::get('chart/roles', [ChartController::class, 'roles']);

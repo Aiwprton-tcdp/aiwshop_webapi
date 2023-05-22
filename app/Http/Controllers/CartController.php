@@ -5,42 +5,50 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CartRequest;
 use App\Models\Cart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     public function index()
     {
-        $data = Cart::join('goods', 'goods.id', 'good_id')
-            ->where('user_id', \Illuminate\Support\Facades\Auth::id())
-            ->select('goods.*')
+        $cart_goods = Cart::join('goods', 'goods.id', 'good_id')
+            ->whereUserId(Auth::id())
             ->get();
         
         return response()->json([
-            "data" => $data
+            "data" => $cart_goods
         ]);
     }
 
     public function store(CartRequest $request)
     {
-        $user_id = \Illuminate\Support\Facades\Auth::id();
         $good_id = (int)request('good_id');
+
+        if ($good_id < 1) {
+            return response()->json([
+                "data" => null,
+                "error" => 'incorrect \'good_id\' parameter',
+                "status" => false,
+            ]);
+        }
+
         $data = [
-            'user_id' => $user_id,
+            'user_id' => Auth::id(),
             'good_id' => $good_id,
         ];
-        $cart = Cart::create($data);
+        $cart_good = Cart::create($data);
         
         return response()->json([
-            "data" => $cart
+            "data" => $cart_good
         ]);
     }
 
     public function destroy($id)
     {
-        $cart = Cart::where('good_id', $id)
-            ->where('user_id', \Illuminate\Support\Facades\Auth::id())
+        $cart_good = Cart::whereGoodId($id)
+            ->whereUserId(Auth::id())
             ->firstOrFail();
-        $result = $cart->delete();
+        $result = $cart_good->delete();
 
         return response()->json([
             "data" => $result

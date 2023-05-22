@@ -17,7 +17,7 @@ class UsersController extends Controller
         $data = DB::table('users')
             ->whereRaw('LOWER(users.name) LIKE ? ', ["%{$name}%"])
             ->join('roles', 'roles.id', 'users.role_id')
-            ->select('users.*', 'roles.name AS rolename')
+            ->select('users.id', 'users.name', 'role_id', 'users.created_at', 'roles.name AS rolename')
             ->orderBy('users.id')
             ->paginate($limit < 1 ? 10 : $limit);
         

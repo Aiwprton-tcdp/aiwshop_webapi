@@ -19,6 +19,6 @@ class ModeratorRole
     {
         return in_array(Auth::user()->role_id, [2, 3])
             ? $next($request)
-            : response()->json('Your are not a moderator');
+            : response()->json('You are not a moderator');
     }
 }

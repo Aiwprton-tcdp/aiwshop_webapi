@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\UserTrait;
 use App\Models\PasswordReset;
 use App\Models\UsersSocial;
 use Illuminate\Support\Str;
@@ -10,13 +11,14 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\WebSocketTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    use \App\Http\Traits\UserTrait;
+    use UserTrait, WebSocketTrait;
 
     /** 
      * Login The User
