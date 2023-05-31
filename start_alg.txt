@@ -5,6 +5,8 @@ echo @php "%~dp0composer.phar" %*>composer.ba
 -- or --
 [OpenServer]: composer self-update
 
+sudo apt-get install php-curl
+
 composer -V
 composer install
 
@@ -22,6 +24,13 @@ php artisan serve
 [remove UI frameworks]: php artisan preset none
 composer remove laravel/ui
 
+[in terminal]:
+mysql
+CREATE DATABASE table_name
+CREATE USER 'user'@'localhost' IDENTIFIED BY 'password'
+GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'user'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES
+EXIT
 
 DB Models init:
 [modify .env DB_]
@@ -50,6 +59,7 @@ composer require maatwebsite/excel
 [websocket]: composer require centrifugal/phpcent:~5.0
 centrifugo genconfig
 composer require predis/predis
+[payments:] composer require qiwi/bill-payments-php-sdk
 
 
 [if 'require' modified]: composer update

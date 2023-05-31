@@ -123,11 +123,15 @@ class AuthController extends Controller
         // $request->user()->currentAccessToken()->delete();
         // return response();
 
-        if(method_exists($request->user()->currentAccessToken(), 'delete')) {
+        if (method_exists($request->user()->currentAccessToken(), 'delete')) {
             $request->user()->currentAccessToken()->delete();
         }
         
-        $request->guard('web')->logout();
+        // $request->guard('web')->logout();
+
+        return response()->json([
+            "data" => true
+        ]);
     }
 
     public function forgot_password(Request $request)
